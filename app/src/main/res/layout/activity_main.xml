@@ -1,0 +1,69 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingTop="@dimen/activity_vertical_margin"-->
+    <!--android:paddingBottom="@dimen/activity_vertical_margin" -->
+
+
+    <TextView android:text="绝对坐标"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/GenaralView"
+        android:id="@+id/currentCoordinates" />
+    <TextView android:text="相对坐标"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/currentCoordinates"
+        android:id="@+id/relativeCoordinates" />
+    <TextView android:text="摇杆方向"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/relativeCoordinates"
+        android:id="@+id/stickDirection" />
+    <peacemaker.threedimentions.GeneralView
+        android:id="@+id/GenaralView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <peacemaker.threedimentions.GamePadView
+        android:layout_below="@id/GenaralView"
+        android:layout_alignParentRight="true"
+        android:id="@+id/GamePadView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="复位"
+        android:id="@+id/reset"
+        android:layout_below="@+id/stickDirection"
+         />
+
+    <SeekBar
+        android:max="100"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar"
+        android:layout_below="@+id/reset"
+         />
+    <!--<EditText-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/editText"-->
+        <!--android:layout_below="@+id/stickDirection"-->
+         <!--/>-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="开始转制"-->
+        <!--android:id="@+id/button"-->
+        <!--android:layout_alignBottom="@+id/editText"-->
+        <!--android:layout_toRightOf="@+id/editText"-->
+        <!--android:layout_toEndOf="@+id/editText" />-->
+
+
+</RelativeLayout>
