@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.text.BoringLayout;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -28,7 +30,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by 请叫我保尔 on 2015/12/5.
  */
-public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
+public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
     float xmax = 0;
     float ymax = 0;
     float zmax = 0;
@@ -71,8 +73,10 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
     private int waitingpoints;
     private ExecutorService cachedThreadPool;
     private int threadnumber;
-    private float a ;
-    private float b ;
+    private float a;
+    private float b;
+    private GestureDetector.OnGestureListener gestureListener;
+    private GestureDetector gestureDetector;
     private ArrayList<CalculateRunnable> calculateRunnables;
     private float waitingDegree = (float) Math.PI / 36;
 
@@ -85,7 +89,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
         this.context = context;
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-        initializePoints();
+        initial();
     }
 
     public GeneralView(Context context) {
@@ -104,7 +108,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setDegree(float deltaα, float deltaβ) {
         //Log.v("GeneralView------->", "setDegree开始转制");
-        Point point1 = new Point(0,0,0,xozMode);
+        Point point1 = new Point(0, 0, 0, xozMode);
         point1.coordianteTransfer(deltaα, deltaβ, 2 * max * proportionality, 2 * max * proportionality, max * proportionality);
         threadnumber = points.size() / 17;
         a = deltaα;
@@ -172,7 +176,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
 //                }
 //                if (counter > 30 || counter == 30) {
                 counter = 0;
-                if (((degreeβ* 180 / Math.PI == 0||degreeβ* 180 / Math.PI<0) && deltaβ < 0) || ((degreeβ* 180 / Math.PI == 180||degreeβ* 180 / Math.PI>180) && deltaβ > 0)) {
+                if (((degreeβ * 180 / Math.PI == 0 || degreeβ * 180 / Math.PI < 0) && deltaβ < 0) || ((degreeβ * 180 / Math.PI == 180 || degreeβ * 180 / Math.PI > 180) && deltaβ > 0)) {
                     setDegree(deltaα, 0);
                 }
                 setDegree(deltaα, deltaβ);
@@ -232,6 +236,9 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
 
 
     }
+    protected void initial(){
+        initializePoints();
+    }
 
     protected void initializePoints() {
 
@@ -289,7 +296,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
                 float y = vs[1] * proportionality;
                 float z = vs[2] * proportionality;
                 //Log.v("GeneralView------->", "initializePoints()观察元素:(" + x + "," + y + "),(" +
-                 //       z + ")");
+                //       z + ")");
                 points.add(new Point(x, y, z, xozMode));
             }
             Paint paint = new Paint();
@@ -337,6 +344,11 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
             //point.coordianteTransfer((float)(45*Math.PI/180),(float)(-45*Math.PI/180));
         }
     }
+    public void scrollEvent(float x1,float y1,float x2,float y2){
+        Log.v("GeneralView------->", "scrollEvent");
+        DrawUtil drawUtil = new DrawUtil();
+        drawUtil.scroll(x1, y1, x2, y2);
+    }
 
     public void drawPoints() {
         Paint paint = new Paint();
@@ -367,41 +379,61 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback {
                 synchronized (point2) {
                     synchronized (point3) {
                         drawTriangles(point1, point2, point3, paint, canvas);
+
                         canvas.drawLine((point1.getRelativeX() + divation) * unitLength, (point1.getRelativeY() + divation) * unitLength,
                                 (point2.getRelativeX() + divation) * unitLength, (point2.getRelativeY() + divation) * unitLength, paint1);
                         canvas.drawLine((point2.getRelativeX() + divation) * unitLength, (point2.getRelativeY() + divation) * unitLength,
                                 (point3.getRelativeX() + divation) * unitLength, (point3.getRelativeY() + divation) * unitLength, paint1);
                         canvas.drawLine((point3.getRelativeX() + divation) * unitLength, (point3.getRelativeY() + divation) * unitLength,
                                 (point1.getRelativeX() + divation) * unitLength, (point1.getRelativeY() + divation) * unitLength, paint1);
-//                    }
                     }
                 }
             }
-            long end = System.currentTimeMillis();
-            long period = end - start;
-            Log.v("GeneralView------->", "测试三角形渲染用时:" + period+"ms");
-
-
+        }
+        long end = System.currentTimeMillis();
+        long period = end - start;
+//        Log.v("GeneralView------->", "测试三角形渲染用时:" + period + "ms");
 //        for (Edge edge : edges) {
-//            for(Point point : points){
-//                canvas.drawCircle(point.getRelativeX() * unitLength, (width/unitLength-point.getRelativeY()) * unitLength, 4, paint);
-//                Log.v("GeneralView------->", "drawPoints点坐标变化:(" + point.getRelativeX()+","+point.getRelativeY()+ ")");
+//            for (Point point : points) {
+//                canvas.drawCircle(point.getRelativeX() * unitLength, (width / unitLength - point.getRelativeY()) * unitLength, 4, paint);
+//                Log.v("GeneralView------->", "drawPoints点坐标变化:(" + point.getRelativeX() + "," + point.getRelativeY() + ")");
 //            }
 //            paint.setTextSize(50);
 //            Point StartPoint = EdgeUtil.getPoint(edge.getStartPointName(), points);
-//            float sx = StartPoint.getRelativeX() * unitLength ;
-//            float sy = (width/unitLength-StartPoint.getRelativeY()) * unitLength ;
+//            float sx = StartPoint.getRelativeX() * unitLength;
+//            float sy = (width / unitLength - StartPoint.getRelativeY()) * unitLength;
 //            Point EndPoint = EdgeUtil.getPoint(edge.getEndPointName(), points);
-//            float ex = EndPoint.getRelativeX() * unitLength ;
-//            float ey = (width/unitLength-EndPoint.getRelativeY()) * unitLength ;
+//            float ex = EndPoint.getRelativeX() * unitLength;
+//            float ey = (width / unitLength - EndPoint.getRelativeY()) * unitLength;
 //            drawMark(StartPoint, paint);
 //            drawMark(EndPoint, paint);
-//            Log.v("GeneralView------->", "drawPoints线段:(" +sx+","+sy+")"+"("+ex+","+ey+")");
-//            canvas.drawLine(sx,sy,ex,ey,paint);
+//            Log.v("GeneralView------->", "drawPoints线段:(" + sx + "," + sy + ")" + "(" + ex + "," + ey + ")");
+//            canvas.drawLine(sx, sy, ex, ey, paint);
 //        }
-
-        }
     }
+//        short VERTEX[] = new short[faces.size()*9];
+//        for (int i=0;i<faces.size();i++) {
+//            int[] pointindex = faces.get(i).getIndexs();
+//            Point point1 = points.get(pointindex[0] - 1);
+//            Point point2 = points.get(pointindex[3] - 1);
+//            Point point3 = points.get(pointindex[6] - 1);
+//            VERTEX[3*i] = (short)point1.getX();
+//            VERTEX[3*i+1] = (short)point1.getY();
+//            VERTEX[3*i+2] = (short)point1.getZ();
+//            VERTEX[3*i+3] = (short)point2.getX();
+//            VERTEX[3*i+4] = (short)point2.getY();
+//            VERTEX[3*i+5] = (short)point2.getZ();
+//            VERTEX[3*i+6] = (short)point3.getX();
+//            VERTEX[3*i+7] = (short)point3.getY();
+//            VERTEX[3*i+8] = (short)point3.getZ();
+//        }
+//        DrawUtil drawUtil = new DrawUtil();
+//        for(Point point:points){
+//            point.getX();
+//            point.getY();
+//        }
+//        drawUtil.drawTri(VERTEX);
+//    }
 
     public void drawMark(Point point, Paint paint) {
         if (point.getPriority()) {

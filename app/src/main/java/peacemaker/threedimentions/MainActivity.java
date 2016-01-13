@@ -3,6 +3,8 @@ package peacemaker.threedimentions;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 //    private EditText editText;
 //    private Button button;
     private Boolean isStop = true;
+    private GestureDetector gestureDetector;
+    private GestureDetector.OnGestureListener gestureListener;
     private GeneralView generalView;
     private GamePadView gamePadView;
     private Button reset;
@@ -116,6 +120,28 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             }
         });
         generalView.setOnTouchListener(this);
+        generalView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                switch (event.getAction()) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        event.getX();
+                        event.getY();
+                        Log.v("GeneralView------->", "开始拖动观察x" + event.getX());
+                        Log.v("GeneralView------->", "开始拖动观察y" + event.getY());
+                        //开始拖动
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        //正在拖动
+                        event.getX();
+                        event.getY();
+                        Log.v("GeneralView------->", "正在拖动观察x" + event.getX());
+                        Log.v("GeneralView------->", "正在拖动观察y" + event.getY());
+                        break;
+                }
+                return false;
+            }
+        });
 //        Thread thread = new Thread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -181,22 +207,90 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             }
 
         });
+        gestureListener = new GestureDetector.OnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                Log.v("MainActivity------->", "按下手势" );
+                return false;
+            }
+
+            @Override
+            public void onShowPress(MotionEvent e) {
+                Log.v("MainActivity------->", "ShowPress手势" );
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                Log.v("MainActivity------->", "单击手势" );
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                Log.v("MainActivity------->", "滚动手势" );
+                generalView.scrollEvent(e1.getX(),e1.getY(),e2.getX(),e2.getY());
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                Log.v("MainActivity------->", "长按手势" );
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                Log.v("MainActivity------->", "抛掷手势" );
+                return false;
+            }
+        };
+        gestureDetector = new GestureDetector(this,gestureListener);
+        //gestureDetector.setIsLongpressEnabled(false);
+        gestureDetector.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                Log.v("MainActivity------->", "确认单击" );
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                Log.v("MainActivity------->", "双击手势" );
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                return false;
+            }
+        });
+
+
+
 
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        x = event.getX();
-        y = event.getY();
-        generalView.setxAxis(x);
-        generalView.setyAxis(y);
-        Log.v("MainActivity------->", "onTouch获取坐标" + x + " " + y);
-        if(y<=generalView.getyMax()) {
-            currentCoordinates.setText("绝对坐标:" + x + "," + y);
-            relativeCoordinates.setText("相对坐标:" + generalView.getxAxis() + "," + generalView.getyAxis());
-        }
-        return true;
+
+//        x = event.getX();
+//        y = event.getY();
+//        generalView.setxAxis(x);
+//        generalView.setyAxis(y);
+//
+//        //Log.v("MainActivity------->", "onTouch获取坐标" + x + " " + y);
+//        if(y<=generalView.getyMax()) {
+//            currentCoordinates.setText("绝对坐标:" + x + "," + y);
+//            relativeCoordinates.setText("相对坐标:" + generalView.getxAxis() + "," + generalView.getyAxis());
+//        }
+        return false;
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        return gestureDetector.onTouchEvent(event);
+    }
+
     public void setSpeed(float degree1,float degree2,float degree3){
         if(degree1!=degreeα ||degree2!=degreeβ ||degree3!=degree
                 ){
