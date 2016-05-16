@@ -75,6 +75,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
     private int threadnumber;
     private float a;
     private float b;
+    private DrawUtil drawUtil;
     private GestureDetector.OnGestureListener gestureListener;
     private GestureDetector gestureDetector;
     private ArrayList<CalculateRunnable> calculateRunnables;
@@ -237,7 +238,10 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
 
     }
     protected void initial(){
+
         initializePoints();
+//        drawUtil = new DrawUtil();
+//        drawUtil.init();
     }
 
     protected void initializePoints() {
@@ -344,11 +348,13 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
             //point.coordianteTransfer((float)(45*Math.PI/180),(float)(-45*Math.PI/180));
         }
     }
-    public void scrollEvent(float x1,float y1,float x2,float y2){
-        Log.v("GeneralView------->", "scrollEvent");
-        DrawUtil drawUtil = new DrawUtil();
-        drawUtil.scroll(x1, y1, x2, y2);
-    }
+//    public void scrollEvent(float x1,float y1,float x2,float y2){
+//        Log.v("GeneralView------->", "scrollEvent");
+//        if(drawUtil==null){
+//            drawUtil = new DrawUtil();
+//        }
+//        drawUtil.scroll(x1, y1, x2, y2);
+//    }
 
     public void drawPoints() {
         Paint paint = new Paint();
@@ -378,21 +384,23 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
             synchronized (point1) {
                 synchronized (point2) {
                     synchronized (point3) {
-                        drawTriangles(point1, point2, point3, paint, canvas);
-
-                        canvas.drawLine((point1.getRelativeX() + divation) * unitLength, (point1.getRelativeY() + divation) * unitLength,
-                                (point2.getRelativeX() + divation) * unitLength, (point2.getRelativeY() + divation) * unitLength, paint1);
-                        canvas.drawLine((point2.getRelativeX() + divation) * unitLength, (point2.getRelativeY() + divation) * unitLength,
-                                (point3.getRelativeX() + divation) * unitLength, (point3.getRelativeY() + divation) * unitLength, paint1);
-                        canvas.drawLine((point3.getRelativeX() + divation) * unitLength, (point3.getRelativeY() + divation) * unitLength,
-                                (point1.getRelativeX() + divation) * unitLength, (point1.getRelativeY() + divation) * unitLength, paint1);
+//                        if(point1.getRelativeZ()>0&&point2.getRelativeZ()>0&&point3.getRelativeZ()>0) {
+                            drawTriangles(point1, point2, point3, paint, canvas);
+                            canvas.drawLine((point1.getRelativeX() + divation) * unitLength, (point1.getRelativeY() + divation) * unitLength,
+                                    (point2.getRelativeX() + divation) * unitLength, (point2.getRelativeY() + divation) * unitLength, paint1);
+                            canvas.drawLine((point2.getRelativeX() + divation) * unitLength, (point2.getRelativeY() + divation) * unitLength,
+                                    (point3.getRelativeX() + divation) * unitLength, (point3.getRelativeY() + divation) * unitLength, paint1);
+                            canvas.drawLine((point3.getRelativeX() + divation) * unitLength, (point3.getRelativeY() + divation) * unitLength,
+                                    (point1.getRelativeX() + divation) * unitLength, (point1.getRelativeY() + divation) * unitLength, paint1);
+//                        }
                     }
                 }
             }
         }
         long end = System.currentTimeMillis();
         long period = end - start;
-//        Log.v("GeneralView------->", "测试三角形渲染用时:" + period + "ms");
+        Log.v("GeneralView------->", "测试三角形渲染用时:" + period + "ms");
+    }
 //        for (Edge edge : edges) {
 //            for (Point point : points) {
 //                canvas.drawCircle(point.getRelativeX() * unitLength, (width / unitLength - point.getRelativeY()) * unitLength, 4, paint);
@@ -410,7 +418,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
 //            Log.v("GeneralView------->", "drawPoints线段:(" + sx + "," + sy + ")" + "(" + ex + "," + ey + ")");
 //            canvas.drawLine(sx, sy, ex, ey, paint);
 //        }
-    }
+//    }
 //        short VERTEX[] = new short[faces.size()*9];
 //        for (int i=0;i<faces.size();i++) {
 //            int[] pointindex = faces.get(i).getIndexs();
@@ -520,6 +528,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
         int y2 = Math.round((point2.getRelativeY() + divation) * unitLength);
         int x3 = Math.round((point3.getRelativeX() + divation) * unitLength);
         int y3 = Math.round((point3.getRelativeY() + divation) * unitLength);
+
         int deltax12 = x1-x2;
         int deltax23 = x2-x3;
         int deltax31 = x3-x1;
@@ -618,6 +627,7 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
 //                                if(cx1==1||cx2==1||cx3==1){
 //                                    canvas.drawPoint(ix,iy,paint1);
 //                                }else {
+
                                     canvas.drawPoint(ix,iy,paint);
 //                                }
                             }
@@ -702,6 +712,9 @@ public class GeneralView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
 
+    }
+    public void stopThread() {
+        isDrawing=false;
     }
 
     class drawRunnable implements Runnable {

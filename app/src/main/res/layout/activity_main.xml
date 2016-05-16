@@ -41,13 +41,20 @@
         android:id="@+id/reset"
         android:layout_below="@+id/stickDirection"
          />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="opengl底层模式"
+        android:id="@+id/opengl"
+        android:layout_below="@+id/reset"
+        />
 
     <SeekBar
         android:max="100"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:id="@+id/seekBar"
-        android:layout_below="@+id/reset"
+        android:layout_below="@+id/opengl"
          />
     <!--<EditText-->
         <!--android:layout_width="100dp"-->

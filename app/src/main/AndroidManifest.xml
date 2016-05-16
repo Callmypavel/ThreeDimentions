@@ -16,6 +16,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".DisplayActivity"
+            android:label="Display">
+            <!-- Tell NativeActivity the name of or .so -->
+            <meta-data android:name="android.app.lib_name"
+                android:value="ThreeDrawer" />
+        </activity>
+        <activity android:name=".TeapotNativeActivity"
+            android:label="Teapot">
+            <!-- Tell NativeActivity the name of or .so -->
+            <meta-data android:name="android.app.lib_name"
+                android:value="ThreeDrawer" />
+        </activity>
     </application>
 
 </manifest>
